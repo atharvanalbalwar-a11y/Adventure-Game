@@ -29,10 +29,8 @@ public class GamePanel extends JPanel implements Runnable {
     private double gravity = 0.3; //constant throughout
     private int velocity = 2;
 
-    private int level = 0;
 
     private BufferedImage background;
-    private BufferedImage level2;
     private BufferedImage characterimg;
     private BufferedImage[] run_ani; // right
     private BufferedImage[] run_ani_back; // left
@@ -88,14 +86,12 @@ public class GamePanel extends JPanel implements Runnable {
 
         InputStream is1 = getClass().getResourceAsStream("/map2.png");
         InputStream is2 = getClass().getResourceAsStream("/character2.png");
-        InputStream is3 = getClass().getResourceAsStream("/background.png");
+
         try{
             assert is1 != null;
             background = ImageIO.read(is1);
             assert is2 != null;
             characterimg = ImageIO.read(is2);
-            assert is3 != null;
-            level2 = ImageIO.read(is3);
         }
         catch(Exception _){}
         finally {
@@ -104,8 +100,6 @@ public class GamePanel extends JPanel implements Runnable {
                 is1.close();
                 assert is2 != null;
                 is2.close();
-                assert is3 != null;
-                is3.close();
             } catch (IOException | NullPointerException _) {}
         }
     }
@@ -120,7 +114,7 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void changePos() {
-        if(map_posY >= -414 && map_posY <= -380 && map_posX >= -830 && map_posX <= -764 && key.enter) level=1;
+
         if(key.space && !jump_start) {
             vertical_Vel = -8;
             jump_start = true;
@@ -175,13 +169,8 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if(level == 0) g.drawImage(background,map_posX,map_posY,null);
-        if(level == 2) g.drawImage(level2,0,0,null);
-        if(level == 1) {
-            g.setColor(Color.black);
-            g.fillRect(0,0,4000,3000);
-            level++;
-        }
+        g.drawImage(background,map_posX,map_posY,null);
+
         if(key.E) g.drawImage(attack_right[aniIndex%6],posX-32,posY-32,null);
         else{
             if(!(key.right || key.left || key.up || key.down)) g.drawImage(idle_ani[(int)idle_ind%2],posX,posY,null);
