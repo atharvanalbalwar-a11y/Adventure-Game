@@ -12,8 +12,8 @@ import java.io.InputStream;
 
 public class GamePanel extends JPanel implements Runnable {
 
-    public int posX = 480;
-    public int posY = 256;
+    public int posX = 380;
+    public int posY = 156;
 
     private int map_posX = -1000;
     private int map_posY = -1000;
@@ -26,8 +26,8 @@ public class GamePanel extends JPanel implements Runnable {
     private int jump_Force = 10;
     private boolean jump_start = false;
     private double vertical_Vel = 0.0;
-    private double gravity = 0.3; //constant throughout
-    private int velocity = 2;
+    private final double gravity = 0.3; //constant throughout
+    private final int velocity = 2;
 
 
     private BufferedImage background;
@@ -87,7 +87,7 @@ public class GamePanel extends JPanel implements Runnable {
 
         InputStream is1 = getClass().getResourceAsStream("/map2.png");
         InputStream is2 = getClass().getResourceAsStream("/character2.png");
-        InputStream is3 = getClass().getResourceAsStream("/map2_hitboxes_final.png");
+        InputStream is3 = getClass().getResourceAsStream("/hitbox_final.png");
 
         try{
             assert is1 != null;
@@ -168,10 +168,10 @@ public class GamePanel extends JPanel implements Runnable {
 
 //        if(posY > 351) posY = 351;
 //        if(posY < 0) posY = 0;
-        if(map_posX <= -1480) map_posX = -1480;
-        if(map_posY <= -1012) map_posY = -1012;
-        if(map_posX >= 0) map_posX = 0;
-        if(map_posY >= -200) map_posY = -200;
+        if(map_posX <= -1580) map_posX = -1580;
+        if(map_posY <= -1112) map_posY = -1112;
+        if(map_posX >= -100) map_posX = -100;
+        if(map_posY >= -300) map_posY = -300;
 
     }
 
@@ -180,6 +180,8 @@ public class GamePanel extends JPanel implements Runnable {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(background,map_posX,map_posY,null);
+        //g.drawImage(map_hitbox,map_posX,map_posY,null);
+
 
         if(key.E) g.drawImage(attack_right[aniIndex%6],posX-32,posY-32,null);
         else{
@@ -229,6 +231,8 @@ public class GamePanel extends JPanel implements Runnable {
             if (aniIndex >= run_ani.length) aniIndex = 0;
             if (idle_ind >= idle_ani.length) {
                 //System.out.println(map_posX+" "+map_posY);
+                //System.out.println((posX-map_posX)+" "+(posY-map_posY));
+                System.out.println();
                 idle_ind = 0;
             }
 
@@ -237,17 +241,16 @@ public class GamePanel extends JPanel implements Runnable {
     public boolean isCollidingWithMap() {
 
         // 1. Convert global player coordinates to local pixel coordinates on the map image
-        int localX = map_posX - posX;
-        int localY = map_posY - posY;
+        int localX = posX-map_posX+32;
+        int localY = posY-map_posY+64;
 
         // 2. Safety check: Is the player even inside the boundaries of the map image?
-        if (localX < 0 || localX >= map_hitbox.getWidth() || localY < 0 || localY >= map_hitbox.getHeight()) {
-            return false; // Out of map bounds, no collision
-        }
+//        if (localX < 0 || localX >= map_hitbox.getWidth() || localY < 0 || localY >= map_hitbox.getHeight()) {
+//            return false; // Out of map bounds, no collision
+//        }
 
         // 3. Get the color data of that exact pixel (ARGB format)
         int pixelColor = map_hitbox.getRGB(localX, localY);
-
         // 4. Extract the Alpha (transparency) value using a bit shift
         // The alpha value ranges from 0 (completely transparent) to 255 (completely solid)
         int alpha = (pixelColor >> 24) & 0xff;
