@@ -15,8 +15,11 @@ public class GamePanel extends JPanel implements Runnable {
     public int posX = 380;
     public int posY = 156;
 
-    private int map_posX = -1000;
-    private int map_posY = -1000;
+    public int map_posX = -1000;
+    public int map_posY = -1000;
+
+    private int localX = posX-map_posX+32;
+    private int localY = posY-map_posY+64;
 
     public keyboard key;
     public mouse Mouse;
@@ -27,12 +30,19 @@ public class GamePanel extends JPanel implements Runnable {
     private boolean jump_start = false;
     private double vertical_Vel = 0.0;
     private final double gravity = 0.3; //constant throughout
-    private final int velocity = 2;
+    public final int velocity = 2;
+
+
+    public orc orc1;
 
 
     private BufferedImage background;
     private BufferedImage map_hitbox;
+    private BufferedImage orc1_run;
     private BufferedImage characterimg;
+
+
+    private BufferedImage[][] orc1_run_ani;
     private BufferedImage[] run_ani; // right
     private BufferedImage[] run_ani_back; // left
     private BufferedImage[] run_forward;
@@ -53,7 +63,8 @@ public class GamePanel extends JPanel implements Runnable {
 
         key = new keyboard();
         Mouse = new mouse();
-        addMouseMotionListener(Mouse);
+        orc1 = new orc(key,this);
+        //addMouseMotionListener(Mouse);
         addKeyListener(key);
         t = new Thread(this);
 
@@ -70,13 +81,19 @@ public class GamePanel extends JPanel implements Runnable {
         run_forward = new BufferedImage[8];
         run_backward = new BufferedImage[8];
         attack_right = new BufferedImage[6];
-
+        orc1_run_ani = new BufferedImage[4][8];
         for(int i=0; i<8;i++) {
+
+            orc1_run_ani[0][i] = orc1_run.getSubimage(64*i,0,64,64);
+            orc1_run_ani[1][i] = orc1_run.getSubimage(64*i,64,64,64);
+            orc1_run_ani[2][i] = orc1_run.getSubimage(64*i,128,64,64);
+            orc1_run_ani[3][i] = orc1_run.getSubimage(64*i,64*3,64,64);
 
             run_ani[i] = characterimg.getSubimage(64*i,64*41,64,64);
             run_ani_back[i] = characterimg.getSubimage(64*i,64*39,64,64);
             run_backward[i] = characterimg.getSubimage(64*i,64*38,64,64);
             run_forward[i] = characterimg.getSubimage(64*i,64*40,64,64);
+
             if(i<2) idle_ani[i] = characterimg.getSubimage(64*i,64*25,64,64);
             if(i<6) attack_right[i] = characterimg.getSubimage(128*i,4352,128,128);
 
@@ -87,7 +104,8 @@ public class GamePanel extends JPanel implements Runnable {
 
         InputStream is1 = getClass().getResourceAsStream("/map2.png");
         InputStream is2 = getClass().getResourceAsStream("/character2.png");
-        InputStream is3 = getClass().getResourceAsStream("/hitbox_final.png");
+        InputStream is3 = getClass().getResourceAsStream("/hitbox_final (1).png");
+        InputStream is4 = getClass().getResourceAsStream("/orc1_run_with_shadow.png");
 
         try{
             assert is1 != null;
@@ -96,6 +114,8 @@ public class GamePanel extends JPanel implements Runnable {
             characterimg = ImageIO.read(is2);
             assert is3 != null;
             map_hitbox = ImageIO.read(is3);
+            assert is4 != null;
+            orc1_run = ImageIO.read(is4);
         }
         catch(Exception _){}
         finally {
@@ -106,6 +126,8 @@ public class GamePanel extends JPanel implements Runnable {
                 is2.close();
                 assert is3 != null;
                 is3.close();
+                assert is4 != null;
+                is4.close();
             } catch (IOException | NullPointerException _) {}
         }
     }
@@ -142,28 +164,32 @@ public class GamePanel extends JPanel implements Runnable {
 //            else posY-=velocity;
             map_posY += velocity;
             direction = 3;
-            if(isCollidingWithMap()) map_posY -= velocity;
+
+            if(isCollidingWithMap(posX-map_posX+32,posY-map_posY+64)) map_posY -= velocity;
         }
         if(key.down) {
 //            if(posY >= 351) map_posY-=velocity;
 //            else posY+=velocity;
             map_posY -= velocity;
             direction = 4;
-            if(isCollidingWithMap()) map_posY += velocity;
+
+            if(isCollidingWithMap(posX-map_posX+32,posY-map_posY+64)) map_posY += velocity;
         }
         if(key.left) {
 //            if(posX <= 100) map_posX+=velocity;
 //            else posX-=velocity;
             map_posX += velocity;
             direction = 2;
-            if(isCollidingWithMap()) map_posX -= velocity;
+
+            if(isCollidingWithMap(posX-map_posX+32,posY-map_posY+64)) map_posX -= velocity;
         }
         if(key.right) {
 //            if(posX >= 812) map_posX-=velocity;
 //            else posX+=velocity;
             map_posX -= velocity;
             direction = 1;
-            if(isCollidingWithMap()) map_posX += velocity;
+
+            if(isCollidingWithMap(posX-map_posX+32,posY-map_posY+64)) map_posX += velocity;
         }
 
 //        if(posY > 351) posY = 351;
@@ -181,12 +207,13 @@ public class GamePanel extends JPanel implements Runnable {
         super.paintComponent(g);
         g.drawImage(background,map_posX,map_posY,null);
         //g.drawImage(map_hitbox,map_posX,map_posY,null);
-
+        g.drawImage(orc1_run_ani[2][aniIndex],orc1.x,orc1.y,null);
 
         if(key.E) g.drawImage(attack_right[aniIndex%6],posX-32,posY-32,null);
         else{
             if(!(key.right || key.left || key.up || key.down)) g.drawImage(idle_ani[(int)idle_ind%2],posX,posY,null);
             else {
+
                 if(direction == 1) g.drawImage(run_ani[aniIndex],posX,posY,null);
                 else if(direction == 2) g.drawImage(run_ani_back[aniIndex],posX,posY,null);
                 else if(direction == 3) g.drawImage(run_backward[aniIndex],posX,posY,null);
@@ -216,6 +243,7 @@ public class GamePanel extends JPanel implements Runnable {
     public void update() {
         updateAniTick();
         changePos();
+        orc1.changePosOrc();
     }
 
 // update animation tick is used for animation after a certain frames are
@@ -228,34 +256,21 @@ public class GamePanel extends JPanel implements Runnable {
             aniTick = 0;
             aniIndex++;
             idle_ind += 0.25;
+
             if (aniIndex >= run_ani.length) aniIndex = 0;
             if (idle_ind >= idle_ani.length) {
                 //System.out.println(map_posX+" "+map_posY);
                 //System.out.println((posX-map_posX)+" "+(posY-map_posY));
-                System.out.println();
+                System.out.println(orc1.x+" "+orc1.y);
                 idle_ind = 0;
             }
 
         }
     }
-    public boolean isCollidingWithMap() {
+    public boolean isCollidingWithMap(int X,int Y) {
 
-        // 1. Convert global player coordinates to local pixel coordinates on the map image
-        int localX = posX-map_posX+32;
-        int localY = posY-map_posY+64;
-
-        // 2. Safety check: Is the player even inside the boundaries of the map image?
-//        if (localX < 0 || localX >= map_hitbox.getWidth() || localY < 0 || localY >= map_hitbox.getHeight()) {
-//            return false; // Out of map bounds, no collision
-//        }
-
-        // 3. Get the color data of that exact pixel (ARGB format)
-        int pixelColor = map_hitbox.getRGB(localX, localY);
-        // 4. Extract the Alpha (transparency) value using a bit shift
-        // The alpha value ranges from 0 (completely transparent) to 255 (completely solid)
+        int pixelColor = map_hitbox.getRGB(X,Y);
         int alpha = (pixelColor >> 24) & 0xff;
-
-        // 5. If alpha is greater than 0, the pixel is NOT empty space (it's a line or shape!)
         return alpha > 0;
     }
 }
