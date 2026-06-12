@@ -39,10 +39,12 @@ public class GamePanel extends JPanel implements Runnable {
     private BufferedImage background;
     private BufferedImage map_hitbox;
     private BufferedImage orc1_run;
+    private BufferedImage orc1_idle;
     private BufferedImage characterimg;
 
 
     private BufferedImage[][] orc1_run_ani;
+    private BufferedImage[][] orc1_idle_ani;
     private BufferedImage[] run_ani; // right
     private BufferedImage[] run_ani_back; // left
     private BufferedImage[] run_forward;
@@ -75,13 +77,17 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void loadAnim() {
+
         run_ani = new BufferedImage[8];
         idle_ani = new BufferedImage[2];//25
         run_ani_back = new BufferedImage[8];
         run_forward = new BufferedImage[8];
         run_backward = new BufferedImage[8];
         attack_right = new BufferedImage[6];
+
         orc1_run_ani = new BufferedImage[4][8];
+        orc1_idle_ani = new BufferedImage[4][4];
+
         for(int i=0; i<8;i++) {
 
             orc1_run_ani[0][i] = orc1_run.getSubimage(64*i,0,64,64);
@@ -96,6 +102,12 @@ public class GamePanel extends JPanel implements Runnable {
 
             if(i<2) idle_ani[i] = characterimg.getSubimage(64*i,64*25,64,64);
             if(i<6) attack_right[i] = characterimg.getSubimage(128*i,4352,128,128);
+            if(i<4) {
+                orc1_idle_ani[0][i] = orc1_idle.getSubimage(64*i,0,64,64);
+                orc1_idle_ani[1][i] = orc1_idle.getSubimage(64*i,64,64,64);
+                orc1_idle_ani[2][i] = orc1_idle.getSubimage(64*i,128,64,64);
+                orc1_idle_ani[3][i] = orc1_idle.getSubimage(64*i,192,64,64);
+            }
 
         }
     }
@@ -106,6 +118,7 @@ public class GamePanel extends JPanel implements Runnable {
         InputStream is2 = getClass().getResourceAsStream("/character2.png");
         InputStream is3 = getClass().getResourceAsStream("/hitbox_final (1).png");
         InputStream is4 = getClass().getResourceAsStream("/orc1_run_with_shadow.png");
+        InputStream is5 = getClass().getResourceAsStream("/orc1_idle_with_shadow.png");
 
         try{
             assert is1 != null;
@@ -116,6 +129,8 @@ public class GamePanel extends JPanel implements Runnable {
             map_hitbox = ImageIO.read(is3);
             assert is4 != null;
             orc1_run = ImageIO.read(is4);
+            assert is5 != null;
+            orc1_idle = ImageIO.read(is5);
         }
         catch(Exception _){}
         finally {
@@ -127,6 +142,8 @@ public class GamePanel extends JPanel implements Runnable {
                 assert is3 != null;
                 is3.close();
                 assert is4 != null;
+                is4.close();
+                assert is5 != null;
                 is4.close();
             } catch (IOException | NullPointerException _) {}
         }
@@ -204,10 +221,12 @@ public class GamePanel extends JPanel implements Runnable {
 
 
     public void paintComponent(Graphics g) {
+
         super.paintComponent(g);
         g.drawImage(background,map_posX,map_posY,null);
-        //g.drawImage(map_hitbox,map_posX,map_posY,null);
-        g.drawImage(orc1_run_ani[2][aniIndex],orc1.x,orc1.y,null);
+
+        if(orc1.distance < 200) g.drawImage(orc1_run_ani[orc1.direction][aniIndex],orc1.x,orc1.y,null);
+        else g.drawImage(orc1_idle_ani[orc1.direction][aniIndex%4],orc1.x,orc1.y,null);
 
         if(key.E) g.drawImage(attack_right[aniIndex%6],posX-32,posY-32,null);
         else{
@@ -259,9 +278,8 @@ public class GamePanel extends JPanel implements Runnable {
 
             if (aniIndex >= run_ani.length) aniIndex = 0;
             if (idle_ind >= idle_ani.length) {
-                //System.out.println(map_posX+" "+map_posY);
-                //System.out.println((posX-map_posX)+" "+(posY-map_posY));
-                System.out.println(orc1.x+" "+orc1.y);
+
+                //System.out.println(orc1.orcX+" "+orc1.orcY);
                 idle_ind = 0;
             }
 
