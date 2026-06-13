@@ -18,40 +18,32 @@ public class orc {
     }
 
     public void changePosOrc() {
-//        x = orcX - g.map_posX;
-//        y = orcY - g.map_posY;
-//        x =  - g.map_posX;
-//        y =  - g.map_posY;
+
         distance = (int)Math.sqrt(Math.pow((g.posX - x),2) + Math.pow((g.posY - y),2));
 
         if(distance<=200) {
-            if(g.posX - x > 32) {
+            if(g.posX - x > 0) {
                 orcX += g.velocity;
                 if(g.isCollidingWithMap(orcX+32,orcY+32)) orcX -= g.velocity;
                 direction = 3;
             }
-            if(g.posX - x < 32) {
+            if(g.posX - x < 0) {
                 orcX -= g.velocity;
                 if(g.isCollidingWithMap(orcX+32,orcY+32)) orcX += g.velocity;
                 direction = 2;
             }
-            if(g.posY - y > 32) {
+            if(g.posY - y > 0) {
                 orcY += g.velocity;
                 if(g.isCollidingWithMap(orcX+32,orcY+32)) orcY -= g.velocity;
                 direction = 0;
             }
-            if(g.posY - y < 32) {
+            if(g.posY - y < 0) {
                 orcY -= g.velocity;
                 if(g.isCollidingWithMap(orcX+32,orcY+32)) orcY += g.velocity;
                 direction = 1;
             }
         }
 
-//
-//        if(x<0) x=0;
-//        if(x>2000) x=2000;
-//        if(y<0) y=0;
-//        if(y>1500) y=1500;
         x = orcX + g.map_posX;
         y = orcY + g.map_posY;
     }
