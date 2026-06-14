@@ -25,6 +25,7 @@ public class GamePanel extends JPanel implements Runnable {
     public mouse Mouse;
 
     private Thread t;
+    public boolean game_start = false;
     private final int FPS = 120;
     private int jump_Force = 10;
     private boolean jump_start = false;
@@ -32,13 +33,16 @@ public class GamePanel extends JPanel implements Runnable {
     private final double gravity = 0.3; //constant throughout
     public final int velocity = 2;
 
+    private boolean is_up = false;
 
     public orc orc1;
+    public player player1;
 
-
+    private BufferedImage start_menu;
     private BufferedImage background;
     private BufferedImage map_layer;
     private BufferedImage map_hitbox;
+    private BufferedImage map_hitbox_layer_2;
     private BufferedImage orc1_run;
     private BufferedImage orc1_idle;
     private BufferedImage orc1_attack;
@@ -66,9 +70,10 @@ public class GamePanel extends JPanel implements Runnable {
 
     public GamePanel() {
 
-        key = new keyboard();
+        key = new keyboard(this);
         Mouse = new mouse();
         orc1 = new orc(key,this);
+        player1 = new player(this);
         //addMouseMotionListener(Mouse);
         addKeyListener(key);
         t = new Thread(this);
@@ -130,6 +135,8 @@ public class GamePanel extends JPanel implements Runnable {
         InputStream is5 = getClass().getResourceAsStream("/orc1_idle_with_shadow.png");
         InputStream is6 = getClass().getResourceAsStream("/orc1_run_attack_front.png");
         InputStream is7 = getClass().getResourceAsStream("/map _layer.png");
+        InputStream is8 = getClass().getResourceAsStream("/hitbox_layer_2.png");
+        InputStream is9 = getClass().getResourceAsStream("/Start_menu.png");
 
         try{
             assert is1 != null;
@@ -146,6 +153,10 @@ public class GamePanel extends JPanel implements Runnable {
             orc1_attack = ImageIO.read(is6);
             assert is7 != null;
             map_layer = ImageIO.read(is7);
+            assert is8 != null;
+            map_hitbox_layer_2 = ImageIO.read(is8);
+            assert is9 != null;
+            start_menu = ImageIO.read(is9);
         }
         catch(Exception _){}
         finally {
@@ -164,6 +175,11 @@ public class GamePanel extends JPanel implements Runnable {
                 is6.close();
                 assert is7 != null;
                 is7.close();
+                assert is8 != null;
+                is8.close();
+                assert is9 != null;
+                is9.close();
+
             } catch (IOException | NullPointerException _) {}
         }
     }
@@ -235,6 +251,10 @@ public class GamePanel extends JPanel implements Runnable {
         if(map_posX >= -100) map_posX = -100;
         if(map_posY >= -300) map_posY = -300;
 
+        if(posX-map_posX+32 >= 950 && posX-map_posX+32 <= 1150) {
+            if(posY - map_posY == 892) is_up = true;
+            if(posY - map_posY == 960) is_up = false;
+        }
     }
 
 
@@ -244,7 +264,7 @@ public class GamePanel extends JPanel implements Runnable {
         super.paintComponent(g);
         g.drawImage(background,map_posX,map_posY,null);
 
-        if(orc1.distance < 200 && orc1.distance >= 30) g.drawImage(orc1_run_ani[orc1.direction][aniIndex],orc1.x,orc1.y,null);
+        if(orc1.distance < 300 && orc1.distance >= 30) g.drawImage(orc1_run_ani[orc1.direction][aniIndex],orc1.x,orc1.y,null);
         else if(orc1.distance < 30) g.drawImage(orc1_attack_ani[orc1.direction][aniIndex],orc1.x,orc1.y,null);
         else g.drawImage(orc1_idle_ani[orc1.direction][aniIndex%4],orc1.x,orc1.y,null);
 
@@ -259,7 +279,8 @@ public class GamePanel extends JPanel implements Runnable {
                 else if(direction == 4) g.drawImage(run_forward[aniIndex],posX,posY,null);
             }
         }
-        g.drawImage(map_layer,map_posX+445,map_posY+448,null);
+        if(!is_up) g.drawImage(map_layer,map_posX+445,map_posY+448,null);
+        if(!game_start) g.drawImage(start_menu,0,0,null);
     }
 
     @Override
@@ -280,6 +301,7 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
     public void update() {
+        if(key.enter) game_start = true;
         updateAniTick();
         changePos();
         orc1.changePosOrc();
@@ -308,7 +330,10 @@ public class GamePanel extends JPanel implements Runnable {
     public boolean isCollidingWithMap(int X,int Y) {
 
         int pixelColor = map_hitbox.getRGB(X,Y);
+        int pixel2 = map_hitbox_layer_2.getRGB(X,Y);
         int alpha = (pixelColor >> 24) & 0xff;
-        return alpha > 0;
+        int beta = (pixel2 >> 24) & 0xff;
+        if(!is_up) return alpha > 0;
+        return beta > 0 || alpha > 0;
     }
 }
