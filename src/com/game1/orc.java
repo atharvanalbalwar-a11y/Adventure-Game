@@ -5,8 +5,8 @@ public class orc {
 
     private keyboard k;
     private final GamePanel g;
-    public int orcX=1000;
-    public int orcY=1000;
+    public int orcX;
+    public int orcY;
     public int x = 500;
     public int y = 500;
     public int direction = 0;
@@ -14,9 +14,12 @@ public class orc {
     public int health_point = 20;
     public boolean hit = false;
 
-    public orc(keyboard k,GamePanel g) {
+
+    public orc(keyboard k,GamePanel g,int orcX,int orcY) {
         this.k = k;
         this.g = g;
+        this.orcX = orcX;
+        this.orcY = orcY;
     }
 
     public void changePosOrc() {
