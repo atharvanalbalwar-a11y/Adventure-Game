@@ -42,8 +42,8 @@ public class GamePanel extends JPanel implements Runnable {
     private BufferedImage game_over_screen;
     private BufferedImage background;
     private BufferedImage map_layer;
-    private BufferedImage map_hitbox;
-    private BufferedImage map_hitbox_layer_2;
+    private BufferedImage map_hitbox_z0;
+    private BufferedImage map_hitbox_z1;
     private BufferedImage orc1_run;
     private BufferedImage orc1_idle;
     private BufferedImage orc1_attack;
@@ -70,8 +70,8 @@ public class GamePanel extends JPanel implements Runnable {
 
         key = new keyboard(this);
         Mouse = new mouse();
-        orc1 = new orc(key,this,1000,1000);
-        orc2 = new orc(key,this,900,900);
+        orc1 = new orc(this,1000,1000,0);
+        orc2 = new orc(this,900,900,1);
         player1 = new player(this,orc1,orc2);
         //addMouseMotionListener(Mouse);
         addKeyListener(key);
@@ -134,12 +134,12 @@ public class GamePanel extends JPanel implements Runnable {
 
         InputStream is1 = getClass().getResourceAsStream("/map2.png");
         InputStream is2 = getClass().getResourceAsStream("/character2.png");
-        InputStream is3 = getClass().getResourceAsStream("/hitbox_final (1).png");
+        InputStream is3 = getClass().getResourceAsStream("/map_Z0_hitbox.png");
         InputStream is4 = getClass().getResourceAsStream("/orc1_run_with_shadow.png");
         InputStream is5 = getClass().getResourceAsStream("/orc1_idle_with_shadow.png");
         InputStream is6 = getClass().getResourceAsStream("/orc1_run_attack_front.png");
-        InputStream is7 = getClass().getResourceAsStream("/map _layer.png");
-        InputStream is8 = getClass().getResourceAsStream("/hitbox_layer_2.png");
+        InputStream is7 = getClass().getResourceAsStream("/map_overlay_when_z0.png");
+        InputStream is8 = getClass().getResourceAsStream("/map_Z1_hitbox.png");
         InputStream is9 = getClass().getResourceAsStream("/Start_menu.png");
         InputStream is10 = getClass().getResourceAsStream("/GAME OVER.png");
         try{
@@ -148,7 +148,7 @@ public class GamePanel extends JPanel implements Runnable {
             assert is2 != null;
             characterimg = ImageIO.read(is2);
             assert is3 != null;
-            map_hitbox = ImageIO.read(is3);
+            map_hitbox_z0 = ImageIO.read(is3);
             assert is4 != null;
             orc1_run = ImageIO.read(is4);
             assert is5 != null;
@@ -158,7 +158,7 @@ public class GamePanel extends JPanel implements Runnable {
             assert is7 != null;
             map_layer = ImageIO.read(is7);
             assert is8 != null;
-            map_hitbox_layer_2 = ImageIO.read(is8);
+            map_hitbox_z1 = ImageIO.read(is8);
             assert is9 != null;
             start_menu = ImageIO.read(is9);
             assert is10 != null;
@@ -225,7 +225,7 @@ public class GamePanel extends JPanel implements Runnable {
             map_posY += velocity;
             direction = 3;
 
-            if(isCollidingWithMap(posX-map_posX+32,posY-map_posY+64)) map_posY -= velocity;
+            if(isCollidingWithMap(posX-map_posX+32,posY-map_posY+64, player1.z)) map_posY -= velocity;
         }
         if(key.down) {
 //            if(posY >= 351) map_posY-=velocity;
@@ -233,7 +233,7 @@ public class GamePanel extends JPanel implements Runnable {
             map_posY -= velocity;
             direction = 4;
 
-            if(isCollidingWithMap(posX-map_posX+32,posY-map_posY+64)) map_posY += velocity;
+            if(isCollidingWithMap(posX-map_posX+32,posY-map_posY+64, player1.z)) map_posY += velocity;
         }
         if(key.left) {
 //            if(posX <= 100) map_posX+=velocity;
@@ -241,7 +241,7 @@ public class GamePanel extends JPanel implements Runnable {
             map_posX += velocity;
             direction = 2;
 
-            if(isCollidingWithMap(posX-map_posX+32,posY-map_posY+64)) map_posX -= velocity;
+            if(isCollidingWithMap(posX-map_posX+32,posY-map_posY+64, player1.z)) map_posX -= velocity;
         }
         if(key.right) {
 //            if(posX >= 812) map_posX-=velocity;
@@ -249,7 +249,7 @@ public class GamePanel extends JPanel implements Runnable {
             map_posX -= velocity;
             direction = 1;
 
-            if(isCollidingWithMap(posX-map_posX+32,posY-map_posY+64)) map_posX += velocity;
+            if(isCollidingWithMap(posX-map_posX+32,posY-map_posY+64, player1.z)) map_posX += velocity;
         }
 
 //        if(posY > 351) posY = 351;
@@ -260,8 +260,8 @@ public class GamePanel extends JPanel implements Runnable {
         if(map_posY >= -300) map_posY = -300;
 
         if(posX-map_posX+32 >= 950 && posX-map_posX+32 <= 1150) {
-            if(posY - map_posY >= 892) is_up = true;
-            if(posY - map_posY >= 960) is_up = false;
+            if(posY - map_posY >= 892) player1.z = 0;
+            if(posY - map_posY <= 960) player1.z = 1;
         }
     }
 
@@ -272,16 +272,23 @@ public class GamePanel extends JPanel implements Runnable {
         super.paintComponent(g);
         g.drawImage(background,map_posX,map_posY,null);
 
-        drawOrc(g,orc1,0);
-        drawOrc(g,orc2,1);
-        if(player1.health_points >= 0){
-            drawPlayer(g);
+        if(player1.health_points > 0){
+            if(orc1.z == 0) drawOrc(g,orc1,0);
+            if(orc2.z == 0) drawOrc(g,orc2,1);
+            if(player1.z == 0) drawPlayer(g);
+
+            // draw overlay layer
+            g.drawImage(map_layer,map_posX+509,map_posY+448,null);
+
+            if(orc1.z == 1) drawOrc(g,orc1,0);
+            if(orc2.z == 1) drawOrc(g,orc2,1);
+            if(player1.z == 1) drawPlayer(g);
         }
         else {
             game_end = true;
         }
 
-        if(!is_up) g.drawImage(map_layer,map_posX+446,map_posY+448,null);
+
         if(!game_start) g.drawImage(start_menu,0,0,null);
         if(game_end) g.drawImage(game_over_screen,0,0,null);
     }
@@ -310,7 +317,7 @@ public class GamePanel extends JPanel implements Runnable {
             changePos();
             orc1.changePosOrc();
             orc2.changePosOrc();
-            player1.got_hit(is_orc_attacking);
+
         }
     }
 
@@ -324,22 +331,23 @@ public class GamePanel extends JPanel implements Runnable {
             aniTick = 0;
             aniIndex++;
             idle_ind += 0.25;
-
+            player1.got_hit();
             if (aniIndex >= run_ani.length) aniIndex = 0;
             if (idle_ind >= idle_ani.length) {
                 idle_ind = 0;
+                System.out.println(is_orc_attacking);
             }
 
         }
     }
-    public boolean isCollidingWithMap(int X,int Y) {
+    public boolean isCollidingWithMap(int X,int Y,int Z) {
 
-        int pixelColor = map_hitbox.getRGB(X,Y);
-        int pixel2 = map_hitbox_layer_2.getRGB(X,Y);
+        int pixelColor = map_hitbox_z0.getRGB(X,Y);
+        int pixel2 = map_hitbox_z1.getRGB(X,Y);
         int alpha = (pixelColor >> 24) & 0xff;
         int beta = (pixel2 >> 24) & 0xff;
-        if(!is_up) return alpha > 0;
-        return beta > 0 || alpha > 0;
+        if(Z == 0) return alpha > 0;
+        return beta > 0;
     }
 
     private void drawOrc(Graphics g,orc orc_i,int i) {
@@ -350,7 +358,7 @@ public class GamePanel extends JPanel implements Runnable {
         }
         else if(orc_i.distance < 30) {
             g.drawImage(orc1_attack_ani[i][orc_i.direction][aniIndex],orc_i.x,orc_i.y,null);
-            is_orc_attacking = true;
+            if(game_start && orc_i.distance <= 40) is_orc_attacking = true;
         }
         else {
             g.drawImage(orc1_idle_ani[i][orc_i.direction][aniIndex%4],orc_i.x,orc_i.y,null);
@@ -370,3 +378,11 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 }
+
+
+/**
+1. z coordinate added in respective change pos methods
+2. hitbox layers are remaining to add
+3. proper layer alignment of background remaining
+4. dividing background into extra layers : done
+ **/

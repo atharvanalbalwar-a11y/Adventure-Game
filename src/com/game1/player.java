@@ -4,7 +4,10 @@ public class player {
 
     private GamePanel g;
     public int health_points = 100;
-    //public boolean hit = false;
+    public boolean hit = false;
+
+    public int z = 0;
+
     orc orc1;
     orc orc2;
 
@@ -14,8 +17,11 @@ public class player {
         this.g = g;
     }
     void hit_goblin() {}
-    void got_hit(boolean hitting) {
-        if(hitting && (orc1.distance <= 30 || orc2.distance <= 30)) {
+    void got_hit() {
+        if(g.is_orc_attacking && orc1.distance < 30) {
+            health_points -= 10;
+        }
+        if(g.is_orc_attacking && orc2.distance < 30) {
             health_points -= 10;
         }
     }
