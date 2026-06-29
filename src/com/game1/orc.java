@@ -28,22 +28,22 @@ public class orc {
         distance = (int)Math.sqrt(Math.pow((g.posX - x),2) + Math.pow((g.posY - y),2));
 
         if(distance<=300) {
-            if(g.posX - x > 0) {
+            if(g.posX - x > 20) {
                 orcX += (g.velocity-1);
                 if(g.isCollidingWithMap(orcX+32,orcY+32, z)) orcX -= (g.velocity-1);
                 direction = 3;
             }
-            if(g.posX - x < 0) {
+            if(g.posX - x < -20) {
                 orcX -= (g.velocity-1);
                 if(g.isCollidingWithMap(orcX+32,orcY+32 ,z)) orcX += (g.velocity-1);
                 direction = 2;
             }
-            if(g.posY - y > 0) {
+            if(g.posY - y > 20) {
                 orcY += (g.velocity-1);
                 if(g.isCollidingWithMap(orcX+32,orcY+32, z)) orcY -= (g.velocity-1);
                 direction = 0;
             }
-            if(g.posY - y < 0) {
+            if(g.posY - y < -20) {
                 orcY -= (g.velocity-1);
                 if(g.isCollidingWithMap(orcX+32,orcY+32, z)) orcY += (g.velocity-1);
                 direction = 1;

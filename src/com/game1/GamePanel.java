@@ -30,9 +30,13 @@ public class GamePanel extends JPanel implements Runnable {
     private double vertical_Vel = 0.0;
     private final double gravity = 0.3; //constant throughout
     public final int velocity = 2;
-    public boolean is_orc_attacking = false;
 
-    private boolean is_up = false;
+    public int hearts = 5;
+
+    public boolean orc1_attacking = false;
+    public boolean orc2_attacking = false;
+    public boolean flag_orc1_attacking = false;
+    public boolean flag_orc2_attacking = false;
 
     public orc orc1;
     public orc orc2;
@@ -47,6 +51,7 @@ public class GamePanel extends JPanel implements Runnable {
     private BufferedImage orc1_run;
     private BufferedImage orc1_idle;
     private BufferedImage orc1_attack;
+    private BufferedImage health;
     private BufferedImage characterimg;
 
 
@@ -142,6 +147,7 @@ public class GamePanel extends JPanel implements Runnable {
         InputStream is8 = getClass().getResourceAsStream("/map_Z1_hitbox.png");
         InputStream is9 = getClass().getResourceAsStream("/Start_menu.png");
         InputStream is10 = getClass().getResourceAsStream("/GAME OVER.png");
+        InputStream is11 = getClass().getResourceAsStream("/healthbar.png");
         try{
             assert is1 != null;
             background = ImageIO.read(is1);
@@ -163,6 +169,8 @@ public class GamePanel extends JPanel implements Runnable {
             start_menu = ImageIO.read(is9);
             assert is10 != null;
             game_over_screen = ImageIO.read(is10);
+            assert is11 != null;
+            health = ImageIO.read(is11);
         }
         catch(Exception _){}
         finally {
@@ -187,6 +195,8 @@ public class GamePanel extends JPanel implements Runnable {
                 is9.close();
                 assert is10 != null;
                 is10.close();
+                assert is11 != null;
+                is11.close();
 
             } catch (IOException | NullPointerException _) {}
         }
@@ -254,10 +264,10 @@ public class GamePanel extends JPanel implements Runnable {
 
 //        if(posY > 351) posY = 351;
 //        if(posY < 0) posY = 0;
-        if(map_posX <= -1580) map_posX = -1580;
-        if(map_posY <= -1112) map_posY = -1112;
-        if(map_posX >= -100) map_posX = -100;
-        if(map_posY >= -300) map_posY = -300;
+//        if(map_posX <= -1580) map_posX = -1580;
+//        if(map_posY <= -1112) map_posY = -1112;
+//        if(map_posX >= -100) map_posX = -100;
+//        if(map_posY >= -300) map_posY = -300;
 
         if(posX-map_posX+32 >= 950 && posX-map_posX+32 <= 1150) {
             if(posY - map_posY >= 892) player1.z = 0;
@@ -287,8 +297,10 @@ public class GamePanel extends JPanel implements Runnable {
         else {
             game_end = true;
         }
-
-
+        if(hearts >= 2 && hearts <= 10){
+            g.drawImage(health.getSubimage(0,31*(5-hearts/2),160,30),10,10,null);
+            //System.out.println(hearts);
+        }
         if(!game_start) g.drawImage(start_menu,0,0,null);
         if(game_end) g.drawImage(game_over_screen,0,0,null);
     }
@@ -331,13 +343,15 @@ public class GamePanel extends JPanel implements Runnable {
             aniTick = 0;
             aniIndex++;
             idle_ind += 0.25;
+
             player1.got_hit();
+
+            if(orc1_attacking) flag_orc1_attacking = !flag_orc1_attacking;
+            if(orc2_attacking) flag_orc2_attacking = !flag_orc2_attacking;
             if (aniIndex >= run_ani.length) aniIndex = 0;
             if (idle_ind >= idle_ani.length) {
                 idle_ind = 0;
-                System.out.println(is_orc_attacking);
             }
-
         }
     }
     public boolean isCollidingWithMap(int X,int Y,int Z) {
@@ -354,15 +368,21 @@ public class GamePanel extends JPanel implements Runnable {
 
         if(orc_i.distance < 300 && orc_i.distance >= 30) {
             g.drawImage(orc1_run_ani[i][orc_i.direction][aniIndex],orc_i.x,orc_i.y,null);
-            is_orc_attacking = false;
+            if(i == 0) orc1_attacking = false;
+            if(i == 1) orc2_attacking = false;
+
         }
         else if(orc_i.distance < 30) {
             g.drawImage(orc1_attack_ani[i][orc_i.direction][aniIndex],orc_i.x,orc_i.y,null);
-            if(game_start && orc_i.distance <= 40) is_orc_attacking = true;
+            if(i == 0) orc1_attacking = true;
+            if(i == 1) orc2_attacking = true;
+
         }
         else {
             g.drawImage(orc1_idle_ani[i][orc_i.direction][aniIndex%4],orc_i.x,orc_i.y,null);
-            is_orc_attacking = false;
+            if(i == 0) orc1_attacking = false;
+            if(i == 1) orc2_attacking = false;
+
         }
     }
 
@@ -378,11 +398,3 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 }
-
-
-/**
-1. z coordinate added in respective change pos methods
-2. hitbox layers are remaining to add
-3. proper layer alignment of background remaining
-4. dividing background into extra layers : done
- **/

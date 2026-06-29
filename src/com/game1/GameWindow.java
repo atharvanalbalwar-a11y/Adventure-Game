@@ -1,16 +1,13 @@
 package com.game1;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class GameWindow {
-    private JFrame frame;
-    private GamePanel panel;
 
     public GameWindow(GamePanel panel) {
 
-        this.panel = panel;
-
-        frame = new JFrame();
+        JFrame frame = new JFrame();
         //frame.setSize(400,400);
         frame.setTitle("My game");
         frame.add(panel);

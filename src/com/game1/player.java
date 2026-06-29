@@ -18,11 +18,13 @@ public class player {
     }
     void hit_goblin() {}
     void got_hit() {
-        if(g.is_orc_attacking && orc1.distance < 30) {
+        if(!g.game_start) return;
+        if(g.orc1_attacking && g.flag_orc1_attacking && orc1.z == this.z) {
             health_points -= 10;
         }
-        if(g.is_orc_attacking && orc2.distance < 30) {
+        if(g.orc2_attacking && g.flag_orc2_attacking && orc2.z == this.z) {
             health_points -= 10;
         }
+        g.hearts = health_points/10;
     }
 }
