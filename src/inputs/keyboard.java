@@ -57,6 +57,9 @@ public class keyboard implements KeyListener {
                 case KeyEvent.VK_D :
                     d = true;
                     break;
+                case KeyEvent.VK_ENTER :
+                    enter = true;
+                    break;
             }
         }
         if(e.getKeyCode() == KeyEvent.VK_ENTER) enter = true;

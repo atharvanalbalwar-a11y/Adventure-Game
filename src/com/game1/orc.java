@@ -30,22 +30,22 @@ public class orc {
         if(distance<=300) {
             if(g.posX - x > 20) {
                 orcX += (g.velocity-1);
-                if(g.isCollidingWithMap(orcX+32,orcY+32, z)) orcX -= (g.velocity-1);
+                if(g.isCollidingWithMap(orcX+32,orcY+32, z,g.map_hitbox_z0,g.map_hitbox_z1)) orcX -= (g.velocity-1);
                 direction = 3;
             }
             if(g.posX - x < -20) {
                 orcX -= (g.velocity-1);
-                if(g.isCollidingWithMap(orcX+32,orcY+32 ,z)) orcX += (g.velocity-1);
+                if(g.isCollidingWithMap(orcX+32,orcY+32 ,z,g.map_hitbox_z0,g.map_hitbox_z1)) orcX += (g.velocity-1);
                 direction = 2;
             }
             if(g.posY - y > 20) {
                 orcY += (g.velocity-1);
-                if(g.isCollidingWithMap(orcX+32,orcY+32, z)) orcY -= (g.velocity-1);
+                if(g.isCollidingWithMap(orcX+32,orcY+32, z,g.map_hitbox_z0,g.map_hitbox_z1)) orcY -= (g.velocity-1);
                 direction = 0;
             }
             if(g.posY - y < -20) {
                 orcY -= (g.velocity-1);
-                if(g.isCollidingWithMap(orcX+32,orcY+32, z)) orcY += (g.velocity-1);
+                if(g.isCollidingWithMap(orcX+32,orcY+32, z,g.map_hitbox_z0,g.map_hitbox_z1)) orcY += (g.velocity-1);
                 direction = 1;
             }
         }
