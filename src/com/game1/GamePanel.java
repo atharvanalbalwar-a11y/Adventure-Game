@@ -75,6 +75,7 @@ public class GamePanel extends JPanel implements Runnable {
     public int aniTick,aniIndex,aniSpeed=12;
     public int coin_ani_ind = 0;
     public double idle_ind = 0.0;
+    public int sfx_ind = 0;
 
     public GamePanel() {
 
@@ -340,17 +341,19 @@ public class GamePanel extends JPanel implements Runnable {
         if (aniTick >= aniSpeed) {
             aniTick = 0;
             aniIndex++;
+            sfx_ind++;
             coin_ani_ind++;
             idle_ind += 0.25;
 
             player1.got_hit();
 
+            if(sfx_ind == 6) sfx_ind = 0;
             if(orc1_attacking) flag_orc1_attacking = !flag_orc1_attacking;
             if(orc2_attacking) flag_orc2_attacking = !flag_orc2_attacking;
             if(aniIndex >= run_ani.length) aniIndex = 0;
             if(coin_ani_ind >= 8) coin_ani_ind = 0;
             if (idle_ind >= idle_ani.length) {
-                System.out.println(player1.z);
+                //System.out.println(player1.z);
                 idle_ind = 0;
             }
         }

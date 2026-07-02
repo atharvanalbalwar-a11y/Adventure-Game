@@ -86,9 +86,6 @@ public class keyboard implements KeyListener {
             case KeyEvent.VK_E :
                 E = false;
                 break;
-//            case KeyEvent.VK_ENTER :
-//                enter = false;
-//                break;
             case KeyEvent.VK_W :
                 w = false;
                 break;

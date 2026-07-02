@@ -12,6 +12,8 @@ public class Levels {
     public BufferedImage map_level2;
     public BufferedImage map_Level2_Z0;
     public BufferedImage map_Level2_Z1;
+    public BufferedImage map_Level2_layer;
+    public BufferedImage sfx;
     public boolean is_lvl2 = false;
 
     public Levels(GamePanel panel) {
@@ -23,6 +25,8 @@ public class Levels {
         InputStream is1 = getClass().getResourceAsStream("/New_Map.png");
         InputStream is2 = getClass().getResourceAsStream("/New_Map_Z0.png");
         InputStream is3 = getClass().getResourceAsStream("/New_Map_Z1.png");
+        InputStream is4 = getClass().getResourceAsStream("/New_Map_layer.png");
+        InputStream is5 = getClass().getResourceAsStream("/quake_0.png");
 
         try{
             assert is1 != null;
@@ -31,6 +35,10 @@ public class Levels {
             map_Level2_Z0 = ImageIO.read(is2);
             assert is3 != null;
             map_Level2_Z1 = ImageIO.read(is3);
+            assert is4 != null;
+            map_Level2_layer = ImageIO.read(is4);
+            assert is5 != null;
+            sfx = ImageIO.read(is5);
         }
         catch(Exception _) {}
         try {
@@ -39,6 +47,10 @@ public class Levels {
             is2.close();
             assert is3 != null;
             is3.close();
+            assert is4 != null;
+            is4.close();
+            assert is5 != null;
+            is5.close();
         }
         catch(IOException | NullPointerException  _) {}
     }
@@ -67,8 +79,11 @@ public class Levels {
             if(panel.hearts >= 2 && panel.hearts <= 10){
                 g.drawImage(panel.health.getSubimage(0,31*(5-panel.hearts/2),160,30),20,20,null);
             }
-            if(380-panel.map_posX >= 1850 && 380-panel.map_posX <= 1930 && 156-panel.map_posY >= 700 && 156-panel.map_posY <= 750) {
+            if(380-panel.map_posX >= 1850 && 380-panel.map_posX <= 1930 && 156-panel.map_posY >= 700 && 156-panel.map_posY <= 750 && panel.key.up) {
                 //if(panel.transition > 0) panel.drawTransition((Graphics2D)g);
+                panel.map_posX = -1640;
+                panel.map_posY = -360;
+                panel.player1.z = 1;
                 panel.currentLevel = 2;
             }
         }
@@ -112,16 +127,28 @@ public class Levels {
 
     public void level2(Graphics g) {
         g.drawImage(map_level2,panel.map_posX,panel.map_posY,null);
-        if(380 - panel.map_posX >= 1988 && 380 - panel.map_posX <= 2088 && 156 - panel.map_posY >= 810 && 156 - panel.map_posY <= 814) {
+        if((380 - panel.map_posX >= 1988 && 380 - panel.map_posX <= 2088 && 156 - panel.map_posY >= 810 && 156 - panel.map_posY <= 814) ||
+           (380 - panel.map_posX >= 1876 && 380 - panel.map_posX <= 1975 && 156 - panel.map_posY >= 1426 && 156 - panel.map_posY <= 1428) ||
+           (380 - panel.map_posX >= 2266 && 380 - panel.map_posX <= 2372 && 156 - panel.map_posY >= 1697 && 156 - panel.map_posY <= 1700) ||
+           (380 - panel.map_posX >= 2615 && 380 - panel.map_posX <= 2617 && 156 - panel.map_posY >= 1395 && 156 - panel.map_posY <= 1475) ||
+           (380 - panel.map_posX >= 1185 && 380 - panel.map_posX <= 1187 && 156 - panel.map_posY >= 1336 && 156 - panel.map_posY <= 1414)) {
             panel.player1.z = 0;
         }
-        else if(380 - panel.map_posX >= 1988 && 380 - panel.map_posX <= 2088 && 156 - panel.map_posY <= 670) {
+        else if((380 - panel.map_posX >= 1988 && 380 - panel.map_posX <= 2088 && 156 - panel.map_posY <= 670 && 156 - panel.map_posY >= 668 ) ||
+                (380 - panel.map_posX >= 1876 && 380 - panel.map_posX <= 1975 && 156 - panel.map_posY <= 1287 && 156 - panel.map_posY >= 1285) ||
+                (380 - panel.map_posX >= 2266 && 380 - panel.map_posX <= 2372 && 156 - panel.map_posY <= 1573 && 156 - panel.map_posY >= 1570) ||
+                (380 - panel.map_posX >= 2615 && 380 - panel.map_posX <= 2617 && 156 - panel.map_posY <= 1400 && 156 - panel.map_posY >= 1332) ||
+                (380 - panel.map_posX >= 1320 && 380 - panel.map_posX <= 1322 && 156 - panel.map_posY <= 1352 && 156 - panel.map_posY >= 1265)) {
             panel.player1.z = 1;
         }
+
         drawPlayer(g);
+        if(panel.player1.z == 0) {
+            g.drawImage(map_Level2_layer,panel.map_posX,panel.map_posY,null);
+        }
         if(panel.hearts >= 2 && panel.hearts <= 10){
             g.drawImage(panel.health.getSubimage(0,31*(5-panel.hearts/2),160,30),20,20,null);
         }
+        g.drawImage(sfx.getSubimage((panel.sfx_ind)*256,0,256,128),panel.map_posX+1640+270, panel.map_posY+360+156,null);
     }
-
 }
