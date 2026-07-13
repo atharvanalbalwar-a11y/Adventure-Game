@@ -3,6 +3,9 @@ package com.game1;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -14,10 +17,20 @@ public class Levels {
     public BufferedImage map_Level2_Z1;
     public BufferedImage map_Level2_layer;
     public BufferedImage sfx;
+    public BufferedImage npc_1;
+    public BufferedImage db1;
+    public BufferedImage golem;
+    public BufferedImage laser;
+
+    public BufferedImage[][] npc_1_ani;
+    public BufferedImage[][] golem_1_ani;
     public boolean is_lvl2 = false;
+
+    public Mecha_Golem mecha_golem;
 
     public Levels(GamePanel panel) {
         this.panel = panel;
+        mecha_golem = new Mecha_Golem(panel,1000,1000,0);
     }
 
     public void loadImg() {
@@ -27,6 +40,10 @@ public class Levels {
         InputStream is3 = getClass().getResourceAsStream("/New_Map_Z1.png");
         InputStream is4 = getClass().getResourceAsStream("/New_Map_layer.png");
         InputStream is5 = getClass().getResourceAsStream("/quake_0.png");
+        InputStream is6 = getClass().getResourceAsStream("/npc1.png");
+        InputStream is7 = getClass().getResourceAsStream("/dialogue_box_v1.png");
+        InputStream is8 = getClass().getResourceAsStream("/Mecha_Golem.png");
+        InputStream is9 = getClass().getResourceAsStream("/Mecha_Golem_Laser.png");
 
         try{
             assert is1 != null;
@@ -39,6 +56,14 @@ public class Levels {
             map_Level2_layer = ImageIO.read(is4);
             assert is5 != null;
             sfx = ImageIO.read(is5);
+            assert is6 != null;
+            npc_1 = ImageIO.read(is6);
+            assert is7 != null;
+            db1 = ImageIO.read(is7);
+            assert is8 != null;
+            golem = ImageIO.read(is8);
+            assert is9 != null;
+            laser = ImageIO.read(is9);
         }
         catch(Exception _) {}
         try {
@@ -51,8 +76,25 @@ public class Levels {
             is4.close();
             assert is5 != null;
             is5.close();
+            assert is6 != null;
+            is6.close();
+            assert is7 != null;
+            is7.close();
+            assert is8 != null;
+            is8.close();
+            assert is9 != null;
+            is9.close();
         }
         catch(IOException | NullPointerException  _) {}
+        npc_1_ani = new BufferedImage[2][10];
+        golem_1_ani = new BufferedImage[10][10];
+        for(int i=0; i<10; i++) {
+            npc_1_ani[0][i] = npc_1.getSubimage(i*64,64,64,64);
+            npc_1_ani[1][i] = npc_1.getSubimage(i*64,320,64,64);
+            for(int j=0; j<10; j++) {
+                golem_1_ani[i][j]=golem.getSubimage(j*120,120*i,120,120);
+            }
+        }
     }
 
     public void level1(Graphics g) {
@@ -131,18 +173,24 @@ public class Levels {
            (380 - panel.map_posX >= 1876 && 380 - panel.map_posX <= 1975 && 156 - panel.map_posY >= 1426 && 156 - panel.map_posY <= 1428) ||
            (380 - panel.map_posX >= 2266 && 380 - panel.map_posX <= 2372 && 156 - panel.map_posY >= 1697 && 156 - panel.map_posY <= 1700) ||
            (380 - panel.map_posX >= 2615 && 380 - panel.map_posX <= 2617 && 156 - panel.map_posY >= 1395 && 156 - panel.map_posY <= 1475) ||
-           (380 - panel.map_posX >= 1185 && 380 - panel.map_posX <= 1187 && 156 - panel.map_posY >= 1336 && 156 - panel.map_posY <= 1414)) {
+           (380 - panel.map_posX >= 1185 && 380 - panel.map_posX <= 1187 && 156 - panel.map_posY >= 1336 && 156 - panel.map_posY <= 1414) ||
+           (380 - panel.map_posX >= 1430 && 380 - panel.map_posX <= 1525 && 156 - panel.map_posY >= 2089 && 156 - panel.map_posY <= 2091)) {
             panel.player1.z = 0;
         }
         else if((380 - panel.map_posX >= 1988 && 380 - panel.map_posX <= 2088 && 156 - panel.map_posY <= 670 && 156 - panel.map_posY >= 668 ) ||
                 (380 - panel.map_posX >= 1876 && 380 - panel.map_posX <= 1975 && 156 - panel.map_posY <= 1287 && 156 - panel.map_posY >= 1285) ||
                 (380 - panel.map_posX >= 2266 && 380 - panel.map_posX <= 2372 && 156 - panel.map_posY <= 1573 && 156 - panel.map_posY >= 1570) ||
                 (380 - panel.map_posX >= 2615 && 380 - panel.map_posX <= 2617 && 156 - panel.map_posY <= 1400 && 156 - panel.map_posY >= 1332) ||
-                (380 - panel.map_posX >= 1320 && 380 - panel.map_posX <= 1322 && 156 - panel.map_posY <= 1352 && 156 - panel.map_posY >= 1265)) {
+                (380 - panel.map_posX >= 1320 && 380 - panel.map_posX <= 1322 && 156 - panel.map_posY <= 1352 && 156 - panel.map_posY >= 1265) ||
+                (380 - panel.map_posX >= 1430 && 380 - panel.map_posX <= 1525 && 156 - panel.map_posY <= 1953 && 156 - panel.map_posY >= 1950)) {
             panel.player1.z = 1;
         }
 
         drawPlayer(g);
+        g.drawImage(npc_1_ani[1][panel.npc_ind],panel.map_posX+1640+200,panel.map_posY+1310+156,64,64,null);
+        //g.drawImage(db1,panel.map_posX+1640+250,panel.map_posY+1310+156,64,32,null);
+        //g.drawImage(golem_1_ani[7][panel.npc_ind], mecha_golem.x, mecha_golem.y,100,100,null);
+
         if(panel.player1.z == 0) {
             g.drawImage(map_Level2_layer,panel.map_posX,panel.map_posY,null);
         }
@@ -150,5 +198,24 @@ public class Levels {
             g.drawImage(panel.health.getSubimage(0,31*(5-panel.hearts/2),160,30),20,20,null);
         }
         g.drawImage(sfx.getSubimage((panel.sfx_ind)*256,0,256,128),panel.map_posX+1640+270, panel.map_posY+360+156,null);
+        drawGolem(g);
+    }
+
+    void drawGolem(Graphics g){
+        if(mecha_golem.distance <= 500) {
+            g.drawImage(golem_1_ani[1][panel.npc_ind%8], mecha_golem.x, mecha_golem.y,120,120,null);
+            Graphics2D g2d = (Graphics2D) g;
+
+            double centerX = 130;
+            double centerY = 50;
+
+            AffineTransform tx = new AffineTransform();
+            tx.translate(mecha_golem.x+125,mecha_golem.y+45);
+            tx.rotate(0);
+            tx.translate(-centerX, -centerY);
+
+            g2d.drawImage(laser.getSubimage(0,panel.npc_ind*80,240,80), tx, null);
+        }
+        else g.drawImage(golem_1_ani[7][panel.npc_ind], mecha_golem.x, mecha_golem.y,120,120,null);
     }
 }

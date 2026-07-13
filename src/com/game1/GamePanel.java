@@ -76,6 +76,7 @@ public class GamePanel extends JPanel implements Runnable {
     public int coin_ani_ind = 0;
     public double idle_ind = 0.0;
     public int sfx_ind = 0;
+    public int npc_ind;
 
     public GamePanel() {
 
@@ -319,12 +320,13 @@ public class GamePanel extends JPanel implements Runnable {
         if(game_start && !game_end) {
             if(currentLevel == 1) {
                 changePos(map_hitbox_z0, map_hitbox_z1);
+                orc1.changePosOrc();
+                orc2.changePosOrc();
             }
             else if(currentLevel == 2) {
                 changePos(level_obj.map_Level2_Z0, level_obj.map_Level2_Z1);
+                level_obj.mecha_golem.changePosGol();
             }
-            orc1.changePosOrc();
-            orc2.changePosOrc();
 
         }
         if(game_end && transition > -120) {
@@ -341,6 +343,7 @@ public class GamePanel extends JPanel implements Runnable {
         if (aniTick >= aniSpeed) {
             aniTick = 0;
             aniIndex++;
+            npc_ind++;
             sfx_ind++;
             coin_ani_ind++;
             idle_ind += 0.25;
@@ -348,6 +351,7 @@ public class GamePanel extends JPanel implements Runnable {
             player1.got_hit();
 
             if(sfx_ind == 6) sfx_ind = 0;
+            if(npc_ind == 10) npc_ind = 0;
             if(orc1_attacking) flag_orc1_attacking = !flag_orc1_attacking;
             if(orc2_attacking) flag_orc2_attacking = !flag_orc2_attacking;
             if(aniIndex >= run_ani.length) aniIndex = 0;
