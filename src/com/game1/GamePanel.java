@@ -59,9 +59,9 @@ public class GamePanel extends JPanel implements Runnable {
     private BufferedImage characterimg;
 
 
-    public BufferedImage[][][] orc1_run_ani;
-    public BufferedImage[][][] orc1_idle_ani;
-    public BufferedImage[][][] orc1_attack_ani;
+    public BufferedImage[][] orc1_run_ani;
+    public BufferedImage[][] orc1_idle_ani;
+    public BufferedImage[][] orc1_attack_ani;
     public BufferedImage[][] run_ani; // right
     public BufferedImage[][] idle_ani;
     public BufferedImage[] attack_right;
@@ -73,10 +73,10 @@ public class GamePanel extends JPanel implements Runnable {
 
 
     public int aniTick,aniIndex,aniSpeed=12;
-    public int coin_ani_ind = 0;
+    public int ind_8 = 0;
     public double idle_ind = 0.0;
-    public int sfx_ind = 0;
-    public int npc_ind;
+    public int ind_6 = 0;
+    public int ind_10;
 
     public GamePanel() {
 
@@ -102,30 +102,28 @@ public class GamePanel extends JPanel implements Runnable {
         idle_ani = new BufferedImage[4][2];
         attack_right = new BufferedImage[6];
 
-        orc1_run_ani = new BufferedImage[2][4][8];
-        orc1_idle_ani = new BufferedImage[2][4][4];
-        orc1_attack_ani = new BufferedImage[2][4][8];
+        orc1_run_ani = new BufferedImage[4][8];
+        orc1_idle_ani = new BufferedImage[4][4];
+        orc1_attack_ani = new BufferedImage[4][8];
 
         for(int i=0; i<8;i++) {
-            for(int j=0; j<2;j++) {
-                orc1_run_ani[j][0][i] = orc1_run.getSubimage(64*i,0,64,64);
-                orc1_run_ani[j][1][i] = orc1_run.getSubimage(64*i,64,64,64);
-                orc1_run_ani[j][2][i] = orc1_run.getSubimage(64*i,128,64,64);
-                orc1_run_ani[j][3][i] = orc1_run.getSubimage(64*i,64*3,64,64);
 
-                orc1_attack_ani[j][0][i] = orc1_attack.getSubimage(64*i,0,64,64);
-                orc1_attack_ani[j][1][i] = orc1_attack.getSubimage(64*i,64,64,64);
-                orc1_attack_ani[j][2][i] = orc1_attack.getSubimage(64*i,128,64,64);
-                orc1_attack_ani[j][3][i] = orc1_attack.getSubimage(64*i,192,64,64);
+            orc1_run_ani[0][i] = orc1_run.getSubimage(64*i,0,64,64);
+            orc1_run_ani[1][i] = orc1_run.getSubimage(64*i,64,64,64);
+            orc1_run_ani[2][i] = orc1_run.getSubimage(64*i,128,64,64);
+            orc1_run_ani[3][i] = orc1_run.getSubimage(64*i,64*3,64,64);
 
-                if(i<4) {
-                    orc1_idle_ani[j][0][i] = orc1_idle.getSubimage(64*i,0,64,64);
-                    orc1_idle_ani[j][1][i] = orc1_idle.getSubimage(64*i,64,64,64);
-                    orc1_idle_ani[j][2][i] = orc1_idle.getSubimage(64*i,128,64,64);
-                    orc1_idle_ani[j][3][i] = orc1_idle.getSubimage(64*i,192,64,64);
-                }
+            orc1_attack_ani[0][i] = orc1_attack.getSubimage(64*i,0,64,64);
+            orc1_attack_ani[1][i] = orc1_attack.getSubimage(64*i,64,64,64);
+            orc1_attack_ani[2][i] = orc1_attack.getSubimage(64*i,128,64,64);
+            orc1_attack_ani[3][i] = orc1_attack.getSubimage(64*i,192,64,64);
+
+            if(i<4) {
+                orc1_idle_ani[0][i] = orc1_idle.getSubimage(64 * i, 0, 64, 64);
+                orc1_idle_ani[1][i] = orc1_idle.getSubimage(64 * i, 64, 64, 64);
+                orc1_idle_ani[2][i] = orc1_idle.getSubimage(64 * i, 128, 64, 64);
+                orc1_idle_ani[3][i] = orc1_idle.getSubimage(64 * i, 192, 64, 64);
             }
-
             run_ani[0][i] = characterimg.getSubimage(64*i,64*41,64,64);
             run_ani[1][i] = characterimg.getSubimage(64*i,64*39,64,64);
             run_ani[2][i] = characterimg.getSubimage(64*i,64*38,64,64);
@@ -138,8 +136,6 @@ public class GamePanel extends JPanel implements Runnable {
                 idle_ani[3][i] = characterimg.getSubimage(64*i,64*24,64,64);
             }
             if(i<6) attack_right[i] = characterimg.getSubimage(128*i,4352,128,128);
-
-
         }
     }
 
@@ -343,19 +339,19 @@ public class GamePanel extends JPanel implements Runnable {
         if (aniTick >= aniSpeed) {
             aniTick = 0;
             aniIndex++;
-            npc_ind++;
-            sfx_ind++;
-            coin_ani_ind++;
+            ind_10++;
+            ind_6++;
+            ind_8++;
             idle_ind += 0.25;
 
             player1.got_hit();
 
-            if(sfx_ind == 6) sfx_ind = 0;
-            if(npc_ind == 10) npc_ind = 0;
+            if(ind_6 == 6) ind_6 = 0;
+            if(ind_10 == 10) ind_10 = 0;
             if(orc1_attacking) flag_orc1_attacking = !flag_orc1_attacking;
             if(orc2_attacking) flag_orc2_attacking = !flag_orc2_attacking;
             if(aniIndex >= run_ani.length) aniIndex = 0;
-            if(coin_ani_ind >= 8) coin_ani_ind = 0;
+            if(ind_8 >= 8) ind_8 = 0;
             if (idle_ind >= idle_ani.length) {
                 //System.out.println(player1.z);
                 idle_ind = 0;

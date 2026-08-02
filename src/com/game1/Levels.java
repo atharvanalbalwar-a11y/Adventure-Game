@@ -1,7 +1,6 @@
 package com.game1;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -19,11 +18,12 @@ public class Levels {
     public BufferedImage sfx;
     public BufferedImage npc_1;
     public BufferedImage db1;
-    public BufferedImage golem;
+    public BufferedImage golem_right;
+    public BufferedImage golem_left;
     public BufferedImage laser;
 
     public BufferedImage[][] npc_1_ani;
-    public BufferedImage[][] golem_1_ani;
+    public BufferedImage[][][] golem_1_ani;
     public boolean is_lvl2 = false;
 
     public Mecha_Golem mecha_golem;
@@ -44,6 +44,7 @@ public class Levels {
         InputStream is7 = getClass().getResourceAsStream("/dialogue_box_v1.png");
         InputStream is8 = getClass().getResourceAsStream("/Mecha_Golem.png");
         InputStream is9 = getClass().getResourceAsStream("/Mecha_Golem_Laser.png");
+        InputStream is10 = getClass().getResourceAsStream("/Mecha_Golem_dir.png");
 
         try{
             assert is1 != null;
@@ -61,9 +62,11 @@ public class Levels {
             assert is7 != null;
             db1 = ImageIO.read(is7);
             assert is8 != null;
-            golem = ImageIO.read(is8);
+            golem_right = ImageIO.read(is8);
             assert is9 != null;
             laser = ImageIO.read(is9);
+            assert is10 != null;
+            golem_left = ImageIO.read(is10);
         }
         catch(Exception _) {}
         try {
@@ -84,15 +87,18 @@ public class Levels {
             is8.close();
             assert is9 != null;
             is9.close();
+            assert is10 != null;
+            is10.close();
         }
         catch(IOException | NullPointerException  _) {}
         npc_1_ani = new BufferedImage[2][10];
-        golem_1_ani = new BufferedImage[10][10];
+        golem_1_ani = new BufferedImage[2][10][10];
         for(int i=0; i<10; i++) {
             npc_1_ani[0][i] = npc_1.getSubimage(i*64,64,64,64);
             npc_1_ani[1][i] = npc_1.getSubimage(i*64,320,64,64);
             for(int j=0; j<10; j++) {
-                golem_1_ani[i][j]=golem.getSubimage(j*120,120*i,120,120);
+                golem_1_ani[0][i][j] = golem_right.getSubimage(j*120,120*i,120,120);
+                golem_1_ani[1][i][j] = golem_left.getSubimage(j*120,120*i,120,120);
             }
         }
     }
@@ -116,7 +122,7 @@ public class Levels {
             else {
                 panel.game_end = true;
             }
-            g.drawImage(panel.coin.getSubimage(panel.coin_ani_ind*30,0,30,30),panel.map_posX + 1290,panel.map_posY + 685,null);
+            g.drawImage(panel.coin.getSubimage(panel.ind_8 *30,0,30,30),panel.map_posX + 1290,panel.map_posY + 685,null);
 
             if(panel.hearts >= 2 && panel.hearts <= 10){
                 g.drawImage(panel.health.getSubimage(0,31*(5-panel.hearts/2),160,30),20,20,null);
@@ -136,22 +142,19 @@ public class Levels {
     private void drawOrc(Graphics g,orc orc_i,int i) {
 
         if(orc_i.distance < 300 && orc_i.distance >= 30) {
-            g.drawImage(panel.orc1_run_ani[i][orc_i.direction][panel.aniIndex],orc_i.x,orc_i.y,null);
+            g.drawImage(panel.orc1_run_ani[orc_i.direction][panel.aniIndex],orc_i.x,orc_i.y,null);
             if(i == 0) panel.orc1_attacking = false;
             if(i == 1) panel.orc2_attacking = false;
-
         }
         else if(orc_i.distance < 30) {
-            g.drawImage(panel.orc1_attack_ani[i][orc_i.direction][panel.aniIndex],orc_i.x,orc_i.y,null);
+            g.drawImage(panel.orc1_attack_ani[orc_i.direction][panel.aniIndex],orc_i.x,orc_i.y,null);
             if(i == 0) panel.orc1_attacking = true;
             if(i == 1) panel.orc2_attacking = true;
-
         }
         else {
-            g.drawImage(panel.orc1_idle_ani[i][orc_i.direction][panel.aniIndex%4],orc_i.x,orc_i.y,null);
+            g.drawImage(panel.orc1_idle_ani[orc_i.direction][panel.aniIndex%4],orc_i.x,orc_i.y,null);
             if(i == 0) panel.orc1_attacking = false;
             if(i == 1) panel.orc2_attacking = false;
-
         }
     }
 
@@ -187,9 +190,9 @@ public class Levels {
         }
 
         drawPlayer(g);
-        g.drawImage(npc_1_ani[1][panel.npc_ind],panel.map_posX+1640+200,panel.map_posY+1310+156,64,64,null);
+        g.drawImage(npc_1_ani[1][panel.ind_10],panel.map_posX+1640+200,panel.map_posY+1310+156,64,64,null);
         //g.drawImage(db1,panel.map_posX+1640+250,panel.map_posY+1310+156,64,32,null);
-        //g.drawImage(golem_1_ani[7][panel.npc_ind], mecha_golem.x, mecha_golem.y,100,100,null);
+        //g.drawImage(golem_1_ani[7][panel.ind_10], mecha_golem.x, mecha_golem.y,100,100,null);
 
         if(panel.player1.z == 0) {
             g.drawImage(map_Level2_layer,panel.map_posX,panel.map_posY,null);
@@ -197,25 +200,27 @@ public class Levels {
         if(panel.hearts >= 2 && panel.hearts <= 10){
             g.drawImage(panel.health.getSubimage(0,31*(5-panel.hearts/2),160,30),20,20,null);
         }
-        g.drawImage(sfx.getSubimage((panel.sfx_ind)*256,0,256,128),panel.map_posX+1640+270, panel.map_posY+360+156,null);
+        g.drawImage(sfx.getSubimage((panel.ind_6)*256,0,256,128),panel.map_posX+1640+270, panel.map_posY+360+156,null);
         drawGolem(g);
     }
 
     void drawGolem(Graphics g){
-        if(mecha_golem.distance <= 500) {
-            g.drawImage(golem_1_ani[1][panel.npc_ind%8], mecha_golem.x, mecha_golem.y,120,120,null);
+        if(mecha_golem.distance <= 400) {
+            if(mecha_golem.direction == 3) g.drawImage(golem_1_ani[0][1][panel.ind_8], mecha_golem.x, mecha_golem.y,120,120,null);
+            else g.drawImage(golem_1_ani[1][1][7-panel.ind_8], mecha_golem.x, mecha_golem.y,120,120,null);
             Graphics2D g2d = (Graphics2D) g;
-
-            double centerX = 130;
-            double centerY = 50;
+            
 
             AffineTransform tx = new AffineTransform();
-            tx.translate(mecha_golem.x+125,mecha_golem.y+45);
-            tx.rotate(0);
-            tx.translate(-centerX, -centerY);
+            tx.translate(mecha_golem.x+50,mecha_golem.y+30);
+            tx.rotate(panel.ind_10*Math.PI/6);
+            tx.translate(-45, -30);
+            g2d.drawImage(laser.getSubimage(0,800,240,80), tx, null);
 
-            g2d.drawImage(laser.getSubimage(0,panel.npc_ind*80,240,80), tx, null);
         }
-        else g.drawImage(golem_1_ani[7][panel.npc_ind], mecha_golem.x, mecha_golem.y,120,120,null);
+        else {
+            if(mecha_golem.direction == 3) g.drawImage(golem_1_ani[0][7][panel.ind_10], mecha_golem.x, mecha_golem.y,120,120,null);
+            //else g.drawImage(golem_1_ani[1][7][9-panel.ind_10], mecha_golem.x, mecha_golem.y,120,120,null);
+        }
     }
 }
