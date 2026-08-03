@@ -306,7 +306,6 @@ public class GamePanel extends JPanel implements Runnable {
                 Last_Frame = now;
                 update();
                 repaint();
-
             }
         }
     }

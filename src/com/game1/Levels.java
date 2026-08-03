@@ -209,13 +209,12 @@ public class Levels {
             if(mecha_golem.direction == 3) g.drawImage(golem_1_ani[0][1][panel.ind_8], mecha_golem.x, mecha_golem.y,120,120,null);
             else g.drawImage(golem_1_ani[1][1][7-panel.ind_8], mecha_golem.x, mecha_golem.y,120,120,null);
             Graphics2D g2d = (Graphics2D) g;
-            
-
             AffineTransform tx = new AffineTransform();
             tx.translate(mecha_golem.x+50,mecha_golem.y+30);
-            tx.rotate(panel.ind_10*Math.PI/6);
+            //tx.rotate(panel.ind_10*Math.PI/6);
+            tx.rotate(mecha_golem.radians);
             tx.translate(-45, -30);
-            g2d.drawImage(laser.getSubimage(0,800,240,80), tx, null);
+            g2d.drawImage(laser.getSubimage(0,80*panel.ind_10,240,80), tx, null);
 
         }
         else {

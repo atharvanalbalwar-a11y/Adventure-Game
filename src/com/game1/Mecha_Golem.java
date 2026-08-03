@@ -1,5 +1,6 @@
 package com.game1;
 
+
 public class Mecha_Golem {
     private final GamePanel g;
     public int golX;
@@ -22,27 +23,27 @@ public class Mecha_Golem {
     public void changePosGol() {
 
         distance = (int)Math.sqrt(Math.pow((g.posX - x),2) + Math.pow((g.posY - y),2));
-
-            if(g.posX - x > 20) {
-                golX += (g.velocity-1);
+        if(distance >= 64) {
+            if (g.posX - x > 20) {
+                golX += (g.velocity - 1);
                 direction = 3;
             }
-            if(g.posX - x < -20) {
-                golX -= (g.velocity-1);
+            if (g.posX - x < -20) {
+                golX -= (g.velocity - 1);
                 direction = 2;
             }
-            if(g.posY - y > 20) {
-                golY += (g.velocity-1);
+            if (g.posY - y > 20) {
+                golY += (g.velocity - 1);
                 direction = 0;
             }
-            if(g.posY - y < -20) {
-                golY -= (g.velocity-1);
+            if (g.posY - y < -20) {
+                golY -= (g.velocity - 1);
                 direction = 1;
             }
-
+        }
         x = golX + g.map_posX;
         y = golY + g.map_posY;
-        radians = Math.atan2((( - g.map_posY - golY)*1.0),( - g.map_posX - golX));
+        radians = Math.atan2((( g.posY-g.map_posY+32 - golY)*1.0),( g.posX-g.map_posX+32 - golX));
         //System.out.println(radians);
         //radians = 0.0;
     }
