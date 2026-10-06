@@ -5,6 +5,7 @@ public class player {
     private GamePanel g;
     public int health_points = 100;
     public boolean hit = false;
+    public int direction = 0;
 
     public int z = 0;
 

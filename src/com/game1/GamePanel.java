@@ -27,9 +27,9 @@ public class GamePanel extends JPanel implements Runnable {
     public boolean game_end = false;
     private final int FPS = 120;
     public int transition = 120;
-    private final int jump_Force = 10;
-    private boolean jump_start = false;
-    private double vertical_Vel = 0.0;
+    //private final int jump_Force = 10;
+    //private boolean jump_start = false;
+    //private double vertical_Vel = 0.0;
     private final double gravity = 0.3; //constant throughout
     public final int velocity = 2;
 
@@ -222,20 +222,20 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void changePos(BufferedImage map_z0, BufferedImage map_z1) {
 
-        if(key.space && !jump_start) {
-            vertical_Vel = -8;
-            jump_start = true;
-        }
-        if(jump_start) {
-            posY+=vertical_Vel;
-            vertical_Vel+=gravity;
-
-            if(posY >= 251) {
-                posY = 251;
-                jump_start = false;
-                vertical_Vel = 0.0;
-            }
-        }
+//        if(key.space && !jump_start) {
+//            vertical_Vel = -8;
+//            jump_start = true;
+//        }
+//        if(jump_start) {
+//            posY+=vertical_Vel;
+//            vertical_Vel+=gravity;
+//
+//            if(posY >= 251) {
+//                posY = 251;
+//                jump_start = false;
+//                vertical_Vel = 0.0;
+//            }
+//        }
 
 
         if(key.up) {
@@ -315,6 +315,7 @@ public class GamePanel extends JPanel implements Runnable {
         if(game_start && !game_end) {
             if(currentLevel == 1) {
                 changePos(map_hitbox_z0, map_hitbox_z1);
+                //new level1(this);
                 orc1.changePosOrc();
                 orc2.changePosOrc();
             }

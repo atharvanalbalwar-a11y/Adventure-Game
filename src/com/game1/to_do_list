@@ -1,0 +1,4 @@
+1. Separate levels
+2. Separate class for collision, character position, orc position
+3. Entity class
+4. load resources in separate level classes
